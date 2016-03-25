@@ -90,19 +90,16 @@ Plugin 'vim-airline/vim-airline-themes' " color themes for status bar
 Plugin 'tpope/vim-surround'             " surround words with characters
 Plugin 'Raimondi/delimitMate'           " Better closing brackets etc.
 Plugin 'scrooloose/nerdcommenter'       " Better commenting
-Plugin 'Valloric/YouCompleteMe'
+Plugin 'Valloric/YouCompleteMe'         " Autocompletion Engine
+Plugin 'rdnetto/YCM-Generator'          " Auto generates config file for C family autocompletion
+Plugin 'jeaye/color_coded'              " Color coding
 
 " Plugin HiCursorWords is used, but there is no git repo:
 " http://www.vim.org/scripts/script.php?script_id=4306
 " For highlighting exact matches of the variable under the cursor
-" Note: HiCursorWords is currently not in use.
-
-" Better variable highlighting in vawa.vim:
-" http://blogs.perl.org/users/ovid/2014/05/automatic-variable-highlighting-in-vim.html
 
 call vundle#end()            " required
 filetype plugin indent on    " required
-
 
 " end of terminull's vimrc
 " ******************************************************************************
