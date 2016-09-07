@@ -2,34 +2,50 @@ set nocompatible    " be iMproved, required
 filetype off        " required
 syntax enable
 
+" Color schemes and GUI settings
+let g:solarized_contrast="high"
+let g:solarized_visibility="high"
+set background=dark
 colorscheme solarized      " See color schemes in ~/.vim/colors
+set guifont=Cousine\ for\ Powerline:h12
+set guioptions-=L "Remove toolbar, scroll bar, etc. from mvim
+set guioptions-=r
+set guioptions-=T
 
-" QoL Shortcuts
-" Rolling fingers over jk resets to command mode
+" Mappings
+
 " leader is comma
 let mapleader=","
-inoremap jk <ESC>
+
+" Rolling fingers over jk resets to command mode
+inoremap jk <ESC> 
+
 " Efficiently go into command line mode
 nnoremap ; :
+
 " Easy window navigation
 map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
-" Use Enter to insert a line below
-nmap <CR> o<Esc>
-" User double enter to insert a line above
-nmap <CR><CR> O<Esc>
+
 " use ,/ to clear highlighted search
 nmap <silent> ,/ :nohlsearch<CR>
+
 " NERDTree toggle
 map <C-n> :NERDTreeToggle<CR>
+
 " Command to trim whitespace from end of lines
 command Trim %s/\s\+$//e
+
 " save session
 nnoremap <leader>s :mksession<CR>
 
+" delimitMate auto line split
+imap <C-c> <CR><Esc>O
+
 " Editor Settings
+"
 " A tab is 2 space characters with the size of two space characters
 set tabstop=2       " Sets the visual appearance of a tab to 2 spaces
 set shiftwidth=2    " Sets the # of tabs the << and >> operatorations indent
@@ -39,7 +55,6 @@ set smarttab        " insert tabs on the start of a line
 set autoindent      " Better indenting, used with smart indent
 set smartindent     " See :h autoindent and :h smartindent for details
 set shiftround      " use multiple of shiftwidth when indenting with '<' and '>'
-
 set nowrap          " don't wrap lines
 set hidden          " QoL Buffer. Popular but not 100% sure of the effect. See
                     " :h hidden
@@ -66,40 +81,120 @@ set backupskip=/tmp/*,/private/tmp/*
 set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set writebackup
 
-"Quit when quitting and NERDTree is the last window
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-
-let g:airline_section_d= '%{strftime("%c")}'  " vim-airline current time
-let g:airline#extensions#tabline#enabled=1    " enable tabline
-let g:airline#extensions#branch#enabled=1     " enable git branch info
-
 " Vundle Plugin Manager
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
-Plugin 'flazz/vim-colorschemes'         " Nice colorscheme repo
+Plugin 'flazz/vim-colorschemes'         " Colorschemes
+Plugin 'scrooloose/syntastic'           " Syntax checking
 Plugin 'scrooloose/nerdtree'            " View directories
-Plugin 'thinca/vim-localrc'             " vimrc for a specific directory
-                                        " http://www.vim.org/scripts/script.php?script_id=3393
-Plugin 'tpope/vim-fugitive'             " Git wrapper
+Plugin 'scrooloose/nerdcommenter'       " Better commenting commands
+Plugin 'ctrlpvim/ctrlp.vim'             " File browsing
+
 Plugin 'vim-airline/vim-airline'        " status bar
 Plugin 'vim-airline/vim-airline-themes' " color themes for status bar
+
+Plugin 'tpope/vim-fugitive'             " Git wrapper
 Plugin 'tpope/vim-surround'             " surround words with characters
-Plugin 'Raimondi/delimitMate'           " Better closing brackets etc.
-Plugin 'scrooloose/nerdcommenter'       " Better commenting
+Plugin 'tpope/vim-unimpaired'           " Cool macros and commands
+Plugin 'tpope/vim-repeat'               " Use . for more than native editor commands
+
 Plugin 'Valloric/YouCompleteMe'         " Autocompletion Engine
 Plugin 'rdnetto/YCM-Generator'          " Auto generates config file for C family autocompletion
-Plugin 'jeaye/color_coded'              " Color coding
+Plugin 'SirVer/ultisnips'               " Snippet engine
+Plugin 'honza/vim-snippets'             " Snippet repo
 
+Plugin 'Raimondi/delimitMate'           " Better closing brackets etc.
+Plugin 'terryma/vim-multiple-cursors'   " Multiple cursors like in sublime
+Plugin 'easymotion/vim-easymotion'      " Better direction controls
+Plugin 'thinca/vim-localrc'             " vimrc for a specific directory
+                                        " http://www.vim.org/scripts/script.php?script_id=3393
 " Plugin HiCursorWords is used, but there is no git repo:
 " http://www.vim.org/scripts/script.php?script_id=4306
 " For highlighting exact matches of the variable under the cursor
 
+" javascript plugins
+Plugin 'mxw/vim-jsx'
+Plugin 'othree/yajs.vim'
+Plugin 'othree/jspc.vim'
+Plugin 'elzr/vim-json'
+
+" php plugins
+Plugin 'StanAngeloff/php.vim'
+
+
 call vundle#end()            " required
 filetype plugin indent on    " required
+
+" Plugin configuration settgins
+" Quit when quitting and NERDTree is the last window (disabled for now)
+"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" show line numbers in nerd tree for easier directory nav
+let NERDTreeShowLineNumbers=1
+
+" Snippet controls
+let g:UltiSnipsExpandTrigger="`"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" vim-airline section settings
+let g:airline#extensions#tabline#enabled=1    " enable tabline
+let g:airline#extensions#branch#enabled=1     " enable git branch info
+
+" set powerline font symbols
+let g:airline_powerline_fonts = 1
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+" unicode symbols if not airline symbols
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.paste = '∥'
+let g:airline_symbols.whitespace = 'Ξ'
+
+" airline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+
+
+" vim-jsx highlighting for .js files
+let g:jsx_ext_required = 0
+
+" Syntastic suggested settings
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+""Disable syntax warnings (disabled for now)
+"let g:syntastic_quiet_messages={'level':'warnings'}
+
+" Multicursor controls
+let g:multi_cursor_use_default_mapping=0
+" Default mapping
+let g:multi_cursor_next_key='<C-m>'
+let g:multi_cursor_prev_key='<C-p>'
+let g:multi_cursor_skip_key='<C-x>'
+let g:multi_cursor_quit_key='<Esc>'
 
 " end of terminull's vimrc
 " ******************************************************************************
