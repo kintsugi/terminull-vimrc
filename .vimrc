@@ -3,10 +3,12 @@ filetype off        " required
 syntax enable
 
 " Color schemes and GUI settings
+colorscheme solarized      " See color schemes in ~/.vim/colors
 let g:solarized_contrast="high"
 let g:solarized_visibility="high"
+let g:solarized_termtrans = 1
 set background=dark
-colorscheme solarized      " See color schemes in ~/.vim/colors
+
 set guifont=Cousine\ for\ Powerline:h12
 set guioptions-=L "Remove toolbar, scroll bar, etc. from mvim
 set guioptions-=r
