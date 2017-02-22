@@ -12,13 +12,24 @@ set guioptions-=L "Remove toolbar, scroll bar, etc. from mvim
 set guioptions-=r
 set guioptions-=T
 
+map <MiddleMouse> <Nop>
+imap <MiddleMouse> <Nop>
+map <2-MiddleMouse> <Nop>
+imap <2-MiddleMouse> <Nop>
+map <3-MiddleMouse> <Nop>
+imap <3-MiddleMouse> <Nop>
+map <4-MiddleMouse> <Nop>
+imap <4-MiddleMouse> <Nop>
+
+vnoremap // y/<C-R>"<CR>
+
 " Mappings
 
 " leader is comma
 let mapleader=","
 
-" Rolling fingers over jk resets to command mode
-inoremap jk <ESC> 
+" Rolling fingers over jj resets to command mode
+imap kj <ESC> 
 
 " Efficiently go into command line mode
 nnoremap ; :
@@ -28,6 +39,9 @@ map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
+
+nnoremap <leader>h :bprevious<CR>
+nnoremap <leader>l   :bnext<CR>
 
 " use ,/ to clear highlighted search
 nmap <silent> ,/ :nohlsearch<CR>
@@ -43,6 +57,10 @@ nnoremap <leader>s :mksession<CR>
 
 " delimitMate auto line split
 imap <C-c> <CR><Esc>O
+
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ctrlp_follow_symlinks = 1
+let g:ctrlp_working_path_mode = 0
 
 " Editor Settings
 "
@@ -63,7 +81,7 @@ set ignorecase      " ignore case when searching
 set smartcase       " ignore case if search pattern is all lowercase,
 set incsearch       " show search matches as you type
 set hlsearch        " highlight search terms
-set wildignore=*.swp,*.bak,*.pyc,*.class
+set wildignore=*.swp,*.bak,*.pyc,*.class,*/tmp/*,*.so,*.zip,*/vendor,*/node_modules,*/.DS_Store
 set title           " change the terminal's title
 set visualbell      " don't beep
 set noerrorbells    " don't beep
@@ -98,8 +116,8 @@ Plugin 'vim-airline/vim-airline-themes' " color themes for status bar
 
 Plugin 'tpope/vim-fugitive'             " Git wrapper
 Plugin 'tpope/vim-surround'             " surround words with characters
-Plugin 'tpope/vim-unimpaired'           " Cool macros and commands
 Plugin 'tpope/vim-repeat'               " Use . for more than native editor commands
+Plugin 'tpope/vim-unimpaired'           " Cool macros and commands
 
 Plugin 'Valloric/YouCompleteMe'         " Autocompletion Engine
 Plugin 'rdnetto/YCM-Generator'          " Auto generates config file for C family autocompletion
@@ -127,6 +145,7 @@ Plugin 'StanAngeloff/php.vim'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py' 
 
 " Plugin configuration settgins
 " Quit when quitting and NERDTree is the last window (disabled for now)
@@ -136,7 +155,7 @@ filetype plugin indent on    " required
 let NERDTreeShowLineNumbers=1
 
 " Snippet controls
-let g:UltiSnipsExpandTrigger="`"
+let g:UltiSnipsExpandTrigger="<leader>;"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
@@ -187,6 +206,7 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 ""Disable syntax warnings (disabled for now)
 "let g:syntastic_quiet_messages={'level':'warnings'}
+let g:syntastic_javascript_checkers = ['eslint']
 
 " Multicursor controls
 let g:multi_cursor_use_default_mapping=0
@@ -195,6 +215,17 @@ let g:multi_cursor_next_key='<C-m>'
 let g:multi_cursor_prev_key='<C-p>'
 let g:multi_cursor_skip_key='<C-x>'
 let g:multi_cursor_quit_key='<Esc>'
+
+" highlight under cursor. activate with let HlUnderCursor=1
+autocmd CursorMoved * exe exists("HlUnderCursor")?HlUnderCursor?printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\')):'match none':""
+
+" move lines up and done
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
 
 " end of terminull's vimrc
 " ******************************************************************************
