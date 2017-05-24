@@ -2,6 +2,8 @@ set nocompatible    " be iMproved, required
 filetype off        " required
 syntax enable
 
+set shell=/bin/bash 
+let $BASH_ENV = "~/.bash_aliases"
 " Color schemes and GUI settings
 colorscheme solarized      " See color schemes in ~/.vim/colors
 let g:solarized_contrast="high"
@@ -30,6 +32,9 @@ vnoremap // y/<C-R>"<CR>
 " leader is comma
 let mapleader=","
 
+" change working directory to directory containing current file
+nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
+
 " Rolling fingers over jj resets to command mode
 imap kj <ESC> 
 
@@ -41,6 +46,9 @@ map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
+
+" vv to generate new vertical split
+nnoremap <silent> vv <C-w>v
 
 nnoremap <leader>h :bprevious<CR>
 nnoremap <leader>l   :bnext<CR>
@@ -60,16 +68,13 @@ nnoremap <leader>s :mksession<CR>
 " delimitMate auto line split
 imap <C-c> <CR><Esc>O
 
-let g:ycm_autoclose_preview_window_after_insertion = 1
-let g:ctrlp_follow_symlinks = 1
-let g:ctrlp_working_path_mode = 0
 
 " Editor Settings
 "
-" A tab is 2 space characters with the size of two space characters
-set tabstop=2       " Sets the visual appearance of a tab to 2 spaces
-set shiftwidth=2    " Sets the # of tabs the << and >> operatorations indent
-set softtabstop=2   " Sets the # of columns used when tab is pressed
+" A tab is 4 space characters with the size of two space characters
+set tabstop=4       " Sets the visual appearance of a tab to 2 spaces
+set shiftwidth=4    " Sets the # of tabs the << and >> operatorations indent
+set softtabstop=4   " Sets the # of columns used when tab is pressed
 set expandtab       " Turn all tabs into spaces
 set smarttab        " insert tabs on the start of a line
 set autoindent      " Better indenting, used with smart indent
@@ -77,13 +82,14 @@ set smartindent     " See :h autoindent and :h smartindent for details
 set shiftround      " use multiple of shiftwidth when indenting with '<' and '>'
 set nowrap          " don't wrap lines
 set hidden          " QoL Buffer. Popular but not 100% sure of the effect. See
-                    " :h hidden
+" :h hidden
 set showmatch       " set show matching parenthesis
+set completeopt-=preview
 set ignorecase      " ignore case when searching
 set smartcase       " ignore case if search pattern is all lowercase,
 set incsearch       " show search matches as you type
 set hlsearch        " highlight search terms
-set wildignore=*.swp,*.bak,*.pyc,*.class,*/tmp/*,*.so,*.zip,*/vendor,*/node_modules,*/.DS_Store
+set wildignore=*.swp,*.bak,*.pyc,*.class,*/tmp/*,*.so,*.zip,*/vendor,*/node_modules,*/.DS_Store,*/ios,*/android,*/__tests__,*/flow-typed,*/release,*.o
 set title           " change the terminal's title
 set visualbell      " don't beep
 set noerrorbells    " don't beep
@@ -93,6 +99,7 @@ set cursorline      " highlight current line
 set wildmenu        " visual autocomplete for command menu
 set laststatus=2    " vim-airline will not show when there is no split window
 set ttimeoutlen=50  " without these two:  https://github.com/vim-airline/vim-airline/issues/130
+set rnu             " relative line nums
 
 "Place backups in a tmp folder
 set backup
@@ -101,74 +108,173 @@ set backupskip=/tmp/*,/private/tmp/*
 set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set writebackup
 
-" Vundle Plugin Manager
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+" vim-plug
+call plug#begin('~/.vim/plugged')
 
-Plugin 'flazz/vim-colorschemes'         " Colorschemes
-Plugin 'scrooloose/syntastic'           " Syntax checking
-Plugin 'scrooloose/nerdtree'            " View directories
-Plugin 'scrooloose/nerdcommenter'       " Better commenting commands
-Plugin 'ctrlpvim/ctrlp.vim'             " File browsing
+" Autocompletion Plugins
+" 5/25/17 nvim/deoplete is slow with ultisnips, deprecating nvim configuration
+if has('nvim')
+  " nvim autocompletion
+  Plug 'Shougo/deoplete.nvim'
+  " completion engine
+  Plug 'zchee/deoplete-jedi'
+  " python autocompletion for deoplete
+  Plug 'carlitux/deoplete-ternjs'
+  " deoplete.nvim source for javascript
+else
+  " vim autocompletion
+  Plug 'maralla/completor.vim'
+endif
+" tern autocompletion for js
+Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
+" snippet engine (related to autocompletion)
+Plug 'SirVer/ultisnips'               
+" Snippet repos 
+" general use snippets
+Plug 'honza/vim-snippets'
+" js es6 
+Plug 'isRuslan/vim-es6'
+" reactjs es6
+Plug 'bentayloruk/vim-react-es6-snippets'
+" End Snippet repos
 
-Plugin 'vim-airline/vim-airline'        " status bar
-Plugin 'vim-airline/vim-airline-themes' " color themes for status bar
+" Graphics/UI Plugins
+" colorschemes
+" tmux integration for vim
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'benmills/vimux' 
+" colorscheme repo
+Plug 'flazz/vim-colorschemes', { 'do': 'mkdir -p ~/.vim/colors && cp colors/* ~/.vim/colors', }         
+" directory drawer
+Plug 'scrooloose/nerdtree'            
+" nerdtree git flags
+Plug 'Xuyuanp/nerdtree-git-plugin'
+" status bar
+Plug 'vim-airline/vim-airline'        
+" color themes for status bar
+Plug 'vim-airline/vim-airline-themes' 
+" git status in gutter
+Plug 'airblade/vim-gitgutter'
+" File browsing
+Plug 'ctrlpvim/ctrlp.vim'             
 
-Plugin 'tpope/vim-fugitive'             " Git wrapper
-Plugin 'tpope/vim-surround'             " surround words with characters
-Plugin 'tpope/vim-repeat'               " Use . for more than native editor commands
-Plugin 'tpope/vim-unimpaired'           " Cool macros and commands
+" typing productivity plugins
+" Better commenting commands
+Plug 'scrooloose/nerdcommenter'       
+" Git wrapper
+Plug 'tpope/vim-fugitive'             
+" surround words with characters
+Plug 'tpope/vim-surround'             
+" Use . for more than native editor commands
+Plug 'tpope/vim-repeat'               
+" Cool macros and commands
+Plug 'tpope/vim-unimpaired'           
+" easily align columns of text
+Plug 'junegunn/vim-easy-align'
+" Better closing brackets etc.
+Plug 'Raimondi/delimitMate'           
+" Multiple cursors like in sublime
+Plug 'terryma/vim-multiple-cursors'   
+" Better direction controls
+Plug 'easymotion/vim-easymotion'      
 
-Plugin 'Valloric/YouCompleteMe'         " Autocompletion Engine
-Plugin 'rdnetto/YCM-Generator'          " Auto generates config file for C family autocompletion
-Plugin 'SirVer/ultisnips'               " Snippet engine
-Plugin 'honza/vim-snippets'             " Snippet repo
+" Syntax Plugins
+" async syntax checker
+Plug 'w0rp/ale'
+" javascript syntax 
+Plug 'pangloss/vim-javascript'
 
-Plugin 'Raimondi/delimitMate'           " Better closing brackets etc.
-Plugin 'terryma/vim-multiple-cursors'   " Multiple cursors like in sublime
-Plugin 'easymotion/vim-easymotion'      " Better direction controls
-Plugin 'thinca/vim-localrc'             " vimrc for a specific directory
-                                        " http://www.vim.org/scripts/script.php?script_id=3393
-" Plugin HiCursorWords is used, but there is no git repo:
-" http://www.vim.org/scripts/script.php?script_id=4306
-" For highlighting exact matches of the variable under the cursor
+" Misc. Plugins
+" editorconfig for vim
+Plug 'editorconfig/editorconfig-vim'
+" personal wiki
+Plug 'vimwiki/vimwiki'
+" relative vimrcs (might not be necessary once I try it editorconfig
+Plug 'embear/vim-localvimrc'             
+call plug#end()
 
-" javascript plugins
-Plugin 'mxw/vim-jsx'
-Plugin 'othree/yajs.vim'
-Plugin 'othree/jspc.vim'
-Plugin 'elzr/vim-json'
+" Plugin configuration
+" Vimux
+" Prompt for a command to run
+map <Leader>vp :VimuxPromptCommand<CR>
+" Run last command executed by VimuxRunCommand
+map <Leader>vl :VimuxRunLastCommand<CR>
+" Inspect runner pane
+map <Leader>vi :VimuxInspectRunner<CR>
+" Zoom the tmux runner pane
+map <Leader>vz :VimuxZoomRunner<CR>
 
-" php plugins
-Plugin 'StanAngeloff/php.vim'
+" vim-easy-align
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 
 
-call vundle#end()            " required
 filetype plugin indent on    " required
 let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py' 
+
+let g:javascript_plugin_flow = 1
+let g:jsx_ext_required = 0
+
+" Use deoplete.
+let g:tern_request_timeout = 1
+let g:tern_show_signature_in_pum = '0'  " This do disable full signature type on autocomplete
+
+"Add extra filetypes
+let g:tern#filetypes = [
+                \ 'jsx',
+                \ 'javascript.jsx',
+                \ 'vue',
+                \ '...'
+                \ ]
+" Use tern_for_vim.
+let g:tern#command = ["tern"]
+let g:tern#arguments = ["--persistent"]
 
 " Plugin configuration settgins
 " Quit when quitting and NERDTree is the last window (disabled for now)
 "autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ctrlp_follow_symlinks = 1
+let g:ctrlp_working_path_mode = 'ra'
+
+let g:deoplete#enable_at_startup = 1
+" deoplete tab-complete
+let g:deoplete#auto_complete_delay = 0
+inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+
+au BufRead,BufNewFile *.md setlocal textwidth=80
+au BufRead,BufNewFile *.txt setlocal textwidth=80
+au BufRead,BufNewFile *.wiki setlocal textwidth=80
 " show line numbers in nerd tree for easier directory nav
 let NERDTreeShowLineNumbers=1
 
-" Snippet controls
-let g:UltiSnipsExpandTrigger="<leader>;"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" Trigger configuration.
+let g:UltiSnipsExpandTrigger='<leader>e'
+let g:UltiSnipsJumpForwardTrigger='<leader>r'
+let g:UltiSnipsJumpBackwardTrigger='<leader>w'
+
+" Called once right before you start selecting multiple cursors
+function! Multiple_cursors_before()
+  let b:deoplete_disable_auto_complete=1
+endfunction
+
+" Called once only when the multiple selection is canceled (default <Esc>)
+function! Multiple_cursors_after()
+  let b:deoplete_disable_auto_complete=0
+endfunction
 
 " vim-airline section settings
-let g:airline#extensions#tabline#enabled=1    " enable tabline
-let g:airline#extensions#branch#enabled=1     " enable git branch info
+let g:airline#extensions#tabline#enabled = 1    " enable tabline
+let g:airline#extensions#branch#enabled = 1     " enable git branch info
+let g:airline#extensions#whitespace#enabled = 0
 
 " set powerline font symbols
 let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
+  let g:airline_symbols = {}
 endif
 " unicode symbols if not airline symbols
 let g:airline_left_sep = '»'
@@ -197,18 +303,12 @@ let g:airline_symbols.linenr = ''
 " vim-jsx highlighting for .js files
 let g:jsx_ext_required = 0
 
-" Syntastic suggested settings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-""Disable syntax warnings (disabled for now)
-"let g:syntastic_quiet_messages={'level':'warnings'}
-let g:syntastic_javascript_checkers = ['eslint']
+" ale linting
+let g:ale_linters = {
+      \   'javascript': ['eslint'],
+      \}
+set statusline+=%{ALEGetStatusLine()}
+let g:ale_sign_column_always = 1
 
 " Multicursor controls
 let g:multi_cursor_use_default_mapping=0
@@ -216,7 +316,7 @@ let g:multi_cursor_use_default_mapping=0
 let g:multi_cursor_next_key='<C-m>'
 let g:multi_cursor_prev_key='<C-p>'
 let g:multi_cursor_skip_key='<C-x>'
-let g:multi_cursor_quit_key='<Esc>'
+let g:multi_cursor_quit_key='kj'
 
 " highlight under cursor. activate with let HlUnderCursor=1
 autocmd CursorMoved * exe exists("HlUnderCursor")?HlUnderCursor?printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\')):'match none':""
@@ -232,6 +332,7 @@ vnoremap <A-k> :m '<-2<CR>gv=gv
 " end of terminull's vimrc
 " ******************************************************************************
 " Default vimrc from vimtutor
+
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim"
   finish
@@ -289,18 +390,18 @@ if has("autocmd")
 
   " Put these in an autocmd group, so that we can delete them easily.
   augroup vimrcEx
-  au!
+    au!
 
-  " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
+    " For all text files set 'textwidth' to 78 characters.
+    autocmd FileType text setlocal textwidth=78
 
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  autocmd BufReadPost *
-    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid or when inside an event handler
+    " (happens when dropping a file on gvim).
+    autocmd BufReadPost *
+          \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+          \   exe "normal! g`\"" |
+          \ endif
 
   augroup END
 
